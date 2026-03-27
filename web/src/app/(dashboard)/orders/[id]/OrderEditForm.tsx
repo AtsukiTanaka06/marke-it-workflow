@@ -48,6 +48,7 @@ export function OrderEditForm({ order }: { order: Order }) {
   const [saving, setSaving] = useState(false)
   const [projects, setProjects] = useState<Project[]>([])
   const [projectSearch, setProjectSearch] = useState('')
+  const [selectedProjectId, setSelectedProjectId] = useState(order.projectId ?? '')
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -71,12 +72,14 @@ export function OrderEditForm({ order }: { order: Order }) {
       .catch(() => toast.error('案件一覧の取得に失敗しました'))
   }, [])
 
-  // 現在の案件名を取得（projectIdに対応するproject.name）
-  const currentProject = projects.find((p) => p.id === order.projectId)
-
-  const filteredProjects = projects.filter((p) =>
+  // 検索で絞り込みつつ、選択中の案件は常にリストに含める
+  const baseFiltered = projects.filter((p) =>
     p.name.toLowerCase().includes(projectSearch.toLowerCase())
   )
+  const filteredProjects =
+    selectedProjectId && !baseFiltered.some((p) => p.id === selectedProjectId)
+      ? [projects.find((p) => p.id === selectedProjectId)!, ...baseFiltered].filter(Boolean)
+      : baseFiltered
 
   async function onSubmit(values: FormValues) {
     setSaving(true)
@@ -124,33 +127,34 @@ export function OrderEditForm({ order }: { order: Order }) {
       {/* 案件（必須） */}
       <div className="space-y-1">
         <Label>案件 <span className="text-destructive">*</span></Label>
-        <div className="flex gap-2">
-          <Input
-            placeholder="絞り込み..."
-            value={projectSearch}
-            onChange={(e) => setProjectSearch(e.target.value)}
-            className="h-9 w-36 shrink-0 text-sm"
-          />
-          <Select
-            key={`project-${order.id}-${currentProject?.id ?? 'loading'}`}
-            defaultValue={order.projectId ?? undefined}
-            onValueChange={(v) => setValue('projectId', v as string, { shouldValidate: true })}
-          >
-            <SelectTrigger className="flex-1">
-              <SelectValue placeholder={projects.length === 0 ? '読み込み中...' : '案件を選択...'} />
-            </SelectTrigger>
-            <SelectContent>
-              {filteredProjects.length === 0 && (
-                <div className="py-2 px-3 text-xs text-muted-foreground">
-                  {projects.length === 0 ? '読み込み中...' : '一致する案件がありません'}
-                </div>
-              )}
-              {filteredProjects.map((p) => (
-                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Input
+          placeholder="絞り込み..."
+          value={projectSearch}
+          onChange={(e) => setProjectSearch(e.target.value)}
+          className="h-9 text-sm"
+        />
+        <Select
+          value={selectedProjectId || undefined}
+          onValueChange={(v) => {
+            const id = v as string
+            setSelectedProjectId(id)
+            setValue('projectId', id, { shouldValidate: true })
+          }}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder={projects.length === 0 ? '読み込み中...' : '案件を選択...'} />
+          </SelectTrigger>
+          <SelectContent>
+            {filteredProjects.length === 0 && (
+              <div className="py-2 px-3 text-xs text-muted-foreground">
+                {projects.length === 0 ? '読み込み中...' : '一致する案件がありません'}
+              </div>
+            )}
+            {filteredProjects.map((p) => (
+              <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         {errors.projectId && <p className="text-xs text-destructive">{errors.projectId.message}</p>}
       </div>
 
