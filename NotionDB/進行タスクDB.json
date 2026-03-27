@@ -1,0 +1,150 @@
+{
+    "object": "database",
+    "id": "e5d9707a-4e5d-83d6-9ccf-015b8e0e96ed",
+    "cover": null,
+    "icon": {
+        "type": "icon",
+        "icon": {
+            "name": "checklist",
+            "color": "gray"
+        }
+    },
+    "created_time": "2026-03-26T12:11:00.000Z",
+    "created_by": {
+        "object": "user",
+        "id": "a9f81230-6e70-417c-92ce-def790a4e7c4"
+    },
+    "last_edited_by": {
+        "object": "user",
+        "id": "a9f81230-6e70-417c-92ce-def790a4e7c4"
+    },
+    "last_edited_time": "2026-03-26T12:13:00.000Z",
+    "title": [
+        {
+            "type": "text",
+            "text": {
+                "content": "進行タスクDB",
+                "link": null
+            },
+            "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+            },
+            "plain_text": "進行タスクDB",
+            "href": null
+        }
+    ],
+    "description": [],
+    "is_inline": false,
+    "properties": {
+        "ドキュメントリンク": {
+            "id": "H%3EDG",
+            "name": "ドキュメントリンク",
+            "description": null,
+            "type": "url",
+            "url": {}
+        },
+        "担当者": {
+            "id": "TSdd",
+            "name": "担当者",
+            "description": null,
+            "type": "people",
+            "people": {}
+        },
+        "受注一覧": {
+            "id": "%60%5CSG",
+            "name": "受注一覧",
+            "description": null,
+            "type": "relation",
+            "relation": {
+                "database_id": "1a49707a-4e5d-80b0-89b5-e9960da11e2f",
+                "data_source_id": "1a49707a-4e5d-81ef-acaa-000b9e67f97c",
+                "type": "dual_property",
+                "dual_property": {
+                    "synced_property_name": "進行タスクDB",
+                    "synced_property_id": "%60Sp%5D"
+                }
+            }
+        },
+        "フェーズ": {
+            "id": "lGMd",
+            "name": "フェーズ",
+            "description": null,
+            "type": "select",
+            "select": {
+                "options": [
+                    {
+                        "id": "GnlW",
+                        "name": "計画中",
+                        "color": "blue",
+                        "description": null
+                    },
+                    {
+                        "id": "GfL[",
+                        "name": "進行中",
+                        "color": "yellow",
+                        "description": null
+                    },
+                    {
+                        "id": "m^tU",
+                        "name": "レビュー中",
+                        "color": "purple",
+                        "description": null
+                    },
+                    {
+                        "id": "y~iP",
+                        "name": "完了",
+                        "color": "green",
+                        "description": null
+                    },
+                    {
+                        "id": "XEoS",
+                        "name": "保留",
+                        "color": "gray",
+                        "description": null
+                    },
+                    {
+                        "id": "\\mXa",
+                        "name": "中止",
+                        "color": "red",
+                        "description": null
+                    },
+                    {
+                        "id": "96cf7ab5-7f33-443c-a4cc-d54b04dbec51",
+                        "name": "レビュー",
+                        "color": "orange",
+                        "description": null
+                    }
+                ]
+            }
+        },
+        "完了": {
+            "id": "xJz%7D",
+            "name": "完了",
+            "description": null,
+            "type": "checkbox",
+            "checkbox": {}
+        },
+        "タスク内容": {
+            "id": "title",
+            "name": "タスク内容",
+            "description": null,
+            "type": "title",
+            "title": {}
+        }
+    },
+    "parent": {
+        "type": "page_id",
+        "page_id": "1a69707a-4e5d-80ae-ab18-e8c4892f6696"
+    },
+    "url": "https://www.notion.so/e5d9707a4e5d83d69ccf015b8e0e96ed",
+    "public_url": null,
+    "in_trash": false,
+    "archived": false,
+    "developer_survey": "https://notionup.typeform.com/to/bllBsoI4?utm_source=postman",
+    "request_id": "0624ed63-bc50-45b9-8483-7d5db5480907"
+}

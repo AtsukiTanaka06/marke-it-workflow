@@ -1,0 +1,439 @@
+{
+  "object": "database",
+  "id": "1a49707a-4e5d-80b0-89b5-e9960da11e2f",
+  "cover": null,
+  "icon": {
+    "type": "icon",
+    "icon": {
+      "name": "atm",
+      "color": "gray"
+    }
+  },
+  "created_time": "2025-02-24T06:51:00.000Z",
+  "created_by": {
+    "object": "user",
+    "id": "260bb12e-15fd-42fd-bca2-3c8aabf21a1d"
+  },
+  "last_edited_by": {
+    "object": "user",
+    "id": "a9f81230-6e70-417c-92ce-def790a4e7c4"
+  },
+  "last_edited_time": "2026-03-26T12:13:00.000Z",
+  "title": [
+    {
+      "type": "text",
+      "text": {
+        "content": "受注一覧",
+        "link": null
+      },
+      "annotations": {
+        "bold": false,
+        "italic": false,
+        "strikethrough": false,
+        "underline": false,
+        "code": false,
+        "color": "default"
+      },
+      "plain_text": "受注一覧",
+      "href": null
+    }
+  ],
+  "description": [],
+  "is_inline": true,
+  "properties": {
+    "期限": {
+      "id": "SNM%3E",
+      "name": "期限",
+      "description": null,
+      "type": "date",
+      "date": {}
+    },
+    "添付": {
+      "id": "%5D%7DTT",
+      "name": "添付",
+      "description": null,
+      "type": "files",
+      "files": {}
+    },
+    "備考": {
+      "id": "_u%3EH",
+      "name": "備考",
+      "description": null,
+      "type": "rich_text",
+      "rich_text": {}
+    },
+    "案件名": {
+      "id": "bXmW",
+      "name": "案件名",
+      "description": null,
+      "type": "relation",
+      "relation": {
+        "database_id": "19d9707a-4e5d-800d-a40f-dec078f895df",
+        "data_source_id": "19d9707a-4e5d-81f1-9897-000b9e734139",
+        "type": "dual_property",
+        "dual_property": {
+          "synced_property_name": "受注一覧",
+          "synced_property_id": "qvFB"
+        }
+      }
+    },
+    "5段階評価": {
+      "id": "hGS~",
+      "name": "5段階評価",
+      "description": null,
+      "type": "multi_select",
+      "multi_select": {
+        "options": []
+      }
+    },
+    "受注内容": {
+      "id": "mc_p",
+      "name": "受注内容",
+      "description": null,
+      "type": "rich_text",
+      "rich_text": {}
+    },
+    "担当者": {
+      "id": "o%7B%3Be",
+      "name": "担当者",
+      "description": null,
+      "type": "people",
+      "people": {}
+    },
+    "進捗": {
+      "id": "qqK%5C",
+      "name": "進捗",
+      "description": null,
+      "type": "status",
+      "status": {
+        "options": [
+          {
+            "id": "S`sK",
+            "name": "失注",
+            "color": "default",
+            "description": null
+          },
+          {
+            "id": "8089f84c-6b5f-44ee-bc2c-9237f892c562",
+            "name": "未着手",
+            "color": "brown",
+            "description": null
+          },
+          {
+            "id": "l}Rw",
+            "name": "見込み",
+            "color": "blue",
+            "description": null
+          },
+          {
+            "id": "to~K",
+            "name": "商談待ち",
+            "color": "yellow",
+            "description": null
+          },
+          {
+            "id": ">?;q",
+            "name": "商談済み",
+            "color": "pink",
+            "description": null
+          },
+          {
+            "id": "EbFc",
+            "name": "進行中（実績）",
+            "color": "green",
+            "description": null
+          },
+          {
+            "id": "fe4b0da5-f5bc-4305-83d3-3aa35afbdc74",
+            "name": "進行中",
+            "color": "purple",
+            "description": null
+          },
+          {
+            "id": "Z{lP",
+            "name": "完了（実績）",
+            "color": "red",
+            "description": null
+          },
+          {
+            "id": "1dd72c43-ac23-437f-8990-4ded612546d2",
+            "name": "完了",
+            "color": "brown",
+            "description": null
+          }
+        ],
+        "groups": [
+          {
+            "id": "304be166-19f2-4c9e-b5d2-93f0f6b17b35",
+            "name": "To-do",
+            "color": "gray",
+            "option_ids": ["S`sK", "8089f84c-6b5f-44ee-bc2c-9237f892c562"]
+          },
+          {
+            "id": "389563d1-c1a0-4e7e-99cf-1facdd98cbf4",
+            "name": "In progress",
+            "color": "blue",
+            "option_ids": [
+              ">?;q",
+              "l}Rw",
+              "to~K",
+              "EbFc",
+              "fe4b0da5-f5bc-4305-83d3-3aa35afbdc74"
+            ]
+          },
+          {
+            "id": "c5044aed-8155-4942-bed4-65d97f111ae3",
+            "name": "Complete",
+            "color": "green",
+            "option_ids": ["Z{lP", "1dd72c43-ac23-437f-8990-4ded612546d2"]
+          }
+        ]
+      }
+    },
+    "業界": {
+      "id": "rVn%7C",
+      "name": "業界",
+      "description": null,
+      "type": "multi_select",
+      "multi_select": {
+        "options": [
+          {
+            "id": "90a07957-e8c0-4e81-924c-9d85656f7184",
+            "name": "ドッグラン",
+            "color": "pink",
+            "description": null
+          },
+          {
+            "id": "75bdf144-352c-4aae-a07b-6f9528bb415d",
+            "name": "宝飾",
+            "color": "gray",
+            "description": null
+          },
+          {
+            "id": "daf6c6b1-7012-4724-ba0f-d3a6ce981d3d",
+            "name": "整体院",
+            "color": "red",
+            "description": null
+          },
+          {
+            "id": "8fd5efff-1ac9-45e2-9665-65e2e719d612",
+            "name": "ダイエット",
+            "color": "blue",
+            "description": null
+          },
+          {
+            "id": "e016e200-0826-4440-b77b-191d37c75fc2",
+            "name": "X攻略",
+            "color": "purple",
+            "description": null
+          },
+          {
+            "id": "acdfe336-ea88-4e0c-918d-de5aa67a8e90",
+            "name": "幼稚園",
+            "color": "orange",
+            "description": null
+          },
+          {
+            "id": "ce3e7830-e7ce-42aa-bccb-d4c6e31e0270",
+            "name": "フリーランス講座",
+            "color": "yellow",
+            "description": null
+          },
+          {
+            "id": "4036972c-3472-4495-8070-b74547b9d32d",
+            "name": "ウェブサービス",
+            "color": "brown",
+            "description": null
+          },
+          {
+            "id": "8f41f514-2c74-4225-9061-63575a361086",
+            "name": "指リンパ",
+            "color": "default",
+            "description": null
+          },
+          {
+            "id": "46086dba-c8ad-4fbb-88ec-9b1fa0e581d3",
+            "name": "不動産（3項目）",
+            "color": "yellow",
+            "description": null
+          },
+          {
+            "id": "80cab433-5b8b-4663-ab95-04219f284d6e",
+            "name": "美容",
+            "color": "orange",
+            "description": null
+          },
+          {
+            "id": "ba7a6290-f9cf-45c5-a3db-a06ef630fd3a",
+            "name": "行政",
+            "color": "orange",
+            "description": null
+          },
+          {
+            "id": "1a207d0e-9a3d-4313-b15d-556d55171110",
+            "name": "スクール",
+            "color": "purple",
+            "description": null
+          },
+          {
+            "id": "9a0cf061-9b79-42ef-873a-fec0d8e6b145",
+            "name": "LINEコンサルタント",
+            "color": "green",
+            "description": null
+          },
+          {
+            "id": "d6d1d128-44ec-49d1-b44a-c36e0e88f4fe",
+            "name": "小売店",
+            "color": "orange",
+            "description": null
+          },
+          {
+            "id": "e91bb69e-8db2-4e9d-939c-a8823b6982c3",
+            "name": "教育",
+            "color": "orange",
+            "description": null
+          },
+          {
+            "id": "996fcdad-29a7-4b95-8280-64263c86c1e4",
+            "name": "妊活",
+            "color": "green",
+            "description": null
+          },
+          {
+            "id": "e63ffb68-6236-4582-ae42-b99360ee4e1c",
+            "name": "キャリア関連",
+            "color": "brown",
+            "description": null
+          },
+          {
+            "id": "fe11ee07-bef8-4cf6-ae95-1168248a9a63",
+            "name": "グルメ",
+            "color": "orange",
+            "description": null
+          },
+          {
+            "id": "fa2a593b-4e3d-4c11-8de4-c7eefc795306",
+            "name": "占い",
+            "color": "red",
+            "description": null
+          },
+          {
+            "id": "22ba290b-27c0-4434-abfc-e8d39590b340",
+            "name": "占い師",
+            "color": "gray",
+            "description": null
+          },
+          {
+            "id": "5edebad9-3053-49d4-a2ac-0abbade044dd",
+            "name": "アフィリエイト",
+            "color": "green",
+            "description": null
+          },
+          {
+            "id": "1d27b403-3d71-45cb-9d5a-a55d053d7c30",
+            "name": "FP",
+            "color": "blue",
+            "description": null
+          },
+          {
+            "id": "e0ced3f2-1696-4a0c-934c-60f25027a368",
+            "name": "お仕事紹介",
+            "color": "orange",
+            "description": null
+          },
+          {
+            "id": "e4baf23e-e2ed-4954-823e-90d3bc470061",
+            "name": "旅行",
+            "color": "default",
+            "description": null
+          },
+          {
+            "id": "f27a1fd1-0661-4a2d-a480-7d9622d76cde",
+            "name": "AI",
+            "color": "orange",
+            "description": null
+          },
+          {
+            "id": "7146fcad-e3b7-4fcc-a03b-ea5e7ee30c33",
+            "name": "管理会社",
+            "color": "pink",
+            "description": null
+          },
+          {
+            "id": "9fa2c43d-8bd1-41e5-9d20-1728ae4f1955",
+            "name": "物販",
+            "color": "orange",
+            "description": null
+          },
+          {
+            "id": "8bbff784-7a26-46c7-a8ec-11645e2e72b4",
+            "name": "ミステリー",
+            "color": "blue",
+            "description": null
+          },
+          {
+            "id": "e60080e3-719d-46ce-bf05-974710411c23",
+            "name": "保険",
+            "color": "red",
+            "description": null
+          }
+        ]
+      }
+    },
+    "運用進捗": {
+      "id": "teo%3D",
+      "name": "運用進捗",
+      "description": null,
+      "type": "select",
+      "select": {
+        "options": [
+          {
+            "id": "f1d52e42-8006-4ab6-9a01-a1b3e1d98889",
+            "name": "運用中",
+            "color": "blue",
+            "description": null
+          },
+          {
+            "id": "1f4803be-0960-40a2-91d5-92e47e3dbcaa",
+            "name": "運用終了",
+            "color": "gray",
+            "description": null
+          }
+        ]
+      }
+    },
+    "受注金額": {
+      "id": "xwvG",
+      "name": "受注金額",
+      "description": null,
+      "type": "number",
+      "number": {
+        "format": "yen"
+      }
+    },
+    "実績記述欄": {
+      "id": "%7DoCM",
+      "name": "実績記述欄",
+      "description": null,
+      "type": "rich_text",
+      "rich_text": {}
+    },
+    "受注項目": {
+      "id": "title",
+      "name": "受注項目",
+      "description": null,
+      "type": "title",
+      "title": {}
+    }
+  },
+  "parent": {
+    "type": "block_id",
+    "block_id": "2189707a-4e5d-8074-be84-d361de7a8f1e"
+  },
+  "url": "https://www.notion.so/1a49707a4e5d80b089b5e9960da11e2f",
+  "public_url": null,
+  "in_trash": false,
+  "archived": false,
+  "developer_survey": "https://notionup.typeform.com/to/bllBsoI4?utm_source=postman",
+  "request_id": "92964651-c2dc-4743-ad17-bd78dff008d6"
+}

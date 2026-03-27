@@ -1,0 +1,315 @@
+{
+    "object": "database",
+    "id": "4f39707a-4e5d-82f6-b56f-810bcfa8d05f",
+    "cover": null,
+    "icon": {
+        "type": "icon",
+        "icon": {
+            "name": "checklist",
+            "color": "gray"
+        }
+    },
+    "created_time": "2026-03-26T12:11:00.000Z",
+    "created_by": {
+        "object": "user",
+        "id": "a9f81230-6e70-417c-92ce-def790a4e7c4"
+    },
+    "last_edited_by": {
+        "object": "user",
+        "id": "a9f81230-6e70-417c-92ce-def790a4e7c4"
+    },
+    "last_edited_time": "2026-03-26T12:11:00.000Z",
+    "title": [
+        {
+            "type": "text",
+            "text": {
+                "content": "タスクテンプレDB",
+                "link": null
+            },
+            "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+            },
+            "plain_text": "タスクテンプレDB",
+            "href": null
+        }
+    ],
+    "description": [],
+    "is_inline": false,
+    "properties": {
+        "フェーズ": {
+            "id": "%3AW%3Cj",
+            "name": "フェーズ",
+            "description": null,
+            "type": "select",
+            "select": {
+                "options": [
+                    {
+                        "id": "q_Xy",
+                        "name": "未着手",
+                        "color": "gray",
+                        "description": null
+                    },
+                    {
+                        "id": "asR`",
+                        "name": "計画中",
+                        "color": "blue",
+                        "description": null
+                    },
+                    {
+                        "id": "DIdq",
+                        "name": "進行中",
+                        "color": "yellow",
+                        "description": null
+                    },
+                    {
+                        "id": "E=SI",
+                        "name": "レビュー",
+                        "color": "purple",
+                        "description": null
+                    },
+                    {
+                        "id": "YKGv",
+                        "name": "完了",
+                        "color": "green",
+                        "description": null
+                    },
+                    {
+                        "id": "U@>g",
+                        "name": "保留",
+                        "color": "orange",
+                        "description": null
+                    },
+                    {
+                        "id": "K^Ph",
+                        "name": "中止",
+                        "color": "red",
+                        "description": null
+                    }
+                ]
+            }
+        },
+        "業界": {
+            "id": "EgOQ",
+            "name": "業界",
+            "description": null,
+            "type": "select",
+            "select": {
+                "options": [
+                    {
+                        "id": "OYx|",
+                        "name": "製造業",
+                        "color": "blue",
+                        "description": null
+                    },
+                    {
+                        "id": "Zyu^",
+                        "name": "小売業",
+                        "color": "green",
+                        "description": null
+                    },
+                    {
+                        "id": "\\;rd",
+                        "name": "IT・通信",
+                        "color": "purple",
+                        "description": null
+                    },
+                    {
+                        "id": "{>N~",
+                        "name": "金融・保険",
+                        "color": "yellow",
+                        "description": null
+                    },
+                    {
+                        "id": "`rS<",
+                        "name": "建設・不動産",
+                        "color": "orange",
+                        "description": null
+                    },
+                    {
+                        "id": "zJwD",
+                        "name": "医療・福祉",
+                        "color": "pink",
+                        "description": null
+                    },
+                    {
+                        "id": "YNkN",
+                        "name": "教育",
+                        "color": "default",
+                        "description": null
+                    },
+                    {
+                        "id": "}p_D",
+                        "name": "サービス業",
+                        "color": "brown",
+                        "description": null
+                    },
+                    {
+                        "id": "lOzT",
+                        "name": "その他",
+                        "color": "gray",
+                        "description": null
+                    }
+                ]
+            }
+        },
+        "ステータス": {
+            "id": "VhLO",
+            "name": "ステータス",
+            "description": null,
+            "type": "status",
+            "status": {
+                "options": [
+                    {
+                        "id": "Q~\\f",
+                        "name": "未着手",
+                        "color": "gray",
+                        "description": null
+                    },
+                    {
+                        "id": "U_E{",
+                        "name": "進行中",
+                        "color": "blue",
+                        "description": null
+                    },
+                    {
+                        "id": "ZiN<",
+                        "name": "レビュー待ち",
+                        "color": "yellow",
+                        "description": null
+                    },
+                    {
+                        "id": "TBt[",
+                        "name": "完了",
+                        "color": "green",
+                        "description": null
+                    }
+                ],
+                "groups": [
+                    {
+                        "id": "h`fA",
+                        "name": "To-do",
+                        "color": "default",
+                        "option_ids": [
+                            "Q~\\f"
+                        ]
+                    },
+                    {
+                        "id": "=FhY",
+                        "name": "In progress",
+                        "color": "default",
+                        "option_ids": [
+                            "U_E{",
+                            "ZiN<"
+                        ]
+                    },
+                    {
+                        "id": "raj=",
+                        "name": "Complete",
+                        "color": "default",
+                        "option_ids": [
+                            "TBt["
+                        ]
+                    }
+                ]
+            }
+        },
+        "テンプレ種別": {
+            "id": "VtLv",
+            "name": "テンプレ種別",
+            "description": null,
+            "type": "select",
+            "select": {
+                "options": [
+                    {
+                        "id": "zdBB",
+                        "name": "プロジェクト",
+                        "color": "blue",
+                        "description": null
+                    },
+                    {
+                        "id": "gl[\\",
+                        "name": "定期タスク",
+                        "color": "green",
+                        "description": null
+                    },
+                    {
+                        "id": "<hXL",
+                        "name": "会議",
+                        "color": "purple",
+                        "description": null
+                    },
+                    {
+                        "id": "\\KAs",
+                        "name": "レビュー",
+                        "color": "orange",
+                        "description": null
+                    },
+                    {
+                        "id": "uecq",
+                        "name": "ドキュメント",
+                        "color": "gray",
+                        "description": null
+                    },
+                    {
+                        "id": "E~cz",
+                        "name": "その他",
+                        "color": "default",
+                        "description": null
+                    }
+                ]
+            }
+        },
+        "有効": {
+            "id": "XTSP",
+            "name": "有効",
+            "description": null,
+            "type": "checkbox",
+            "checkbox": {}
+        },
+        "ドキュメント名": {
+            "id": "eOun",
+            "name": "ドキュメント名",
+            "description": null,
+            "type": "rich_text",
+            "rich_text": {}
+        },
+        "担当者": {
+            "id": "jADT",
+            "name": "担当者",
+            "description": null,
+            "type": "people",
+            "people": {}
+        },
+        "順番": {
+            "id": "pFqQ",
+            "name": "順番",
+            "description": null,
+            "type": "number",
+            "number": {
+                "format": "number"
+            }
+        },
+        "タスク名": {
+            "id": "title",
+            "name": "タスク名",
+            "description": null,
+            "type": "title",
+            "title": {}
+        }
+    },
+    "parent": {
+        "type": "page_id",
+        "page_id": "1a69707a-4e5d-80ae-ab18-e8c4892f6696"
+    },
+    "url": "https://www.notion.so/4f39707a4e5d82f6b56f810bcfa8d05f",
+    "public_url": null,
+    "in_trash": false,
+    "archived": false,
+    "developer_survey": "https://notionup.typeform.com/to/bllBsoI4?utm_source=postman",
+    "request_id": "92c6a774-874e-4b15-a9f4-d69a767f588b"
+}

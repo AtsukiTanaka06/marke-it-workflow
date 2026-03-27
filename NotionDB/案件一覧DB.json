@@ -1,0 +1,224 @@
+{
+    "object": "database",
+    "id": "19d9707a-4e5d-800d-a40f-dec078f895df",
+    "cover": null,
+    "icon": {
+        "type": "emoji",
+        "emoji": "💼"
+    },
+    "created_time": "2025-02-17T13:50:00.000Z",
+    "created_by": {
+        "object": "user",
+        "id": "a9f81230-6e70-417c-92ce-def790a4e7c4"
+    },
+    "last_edited_by": {
+        "object": "user",
+        "id": "260bb12e-15fd-42fd-bca2-3c8aabf21a1d"
+    },
+    "last_edited_time": "2026-03-16T01:14:00.000Z",
+    "title": [
+        {
+            "type": "text",
+            "text": {
+                "content": "案件一覧",
+                "link": null
+            },
+            "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+            },
+            "plain_text": "案件一覧",
+            "href": null
+        }
+    ],
+    "description": [],
+    "is_inline": true,
+    "properties": {
+        "契約内容": {
+            "id": "LmZa",
+            "name": "契約内容",
+            "description": null,
+            "type": "rich_text",
+            "rich_text": {}
+        },
+        "初期費用": {
+            "id": "Lmsd",
+            "name": "初期費用",
+            "description": null,
+            "type": "number",
+            "number": {
+                "format": "yen"
+            }
+        },
+        "業界": {
+            "id": "R%40o~",
+            "name": "業界",
+            "description": null,
+            "type": "multi_select",
+            "multi_select": {
+                "options": [
+                    {
+                        "id": "YYFI",
+                        "name": "起業",
+                        "color": "green",
+                        "description": null
+                    },
+                    {
+                        "id": "d0f72199-8fe3-406b-98f1-a1df3ed208e8",
+                        "name": "転職相談",
+                        "color": "red",
+                        "description": null
+                    },
+                    {
+                        "id": "acee9bfe-8f0a-49b7-957c-21bf5cbd3433",
+                        "name": "自己肯定",
+                        "color": "orange",
+                        "description": null
+                    },
+                    {
+                        "id": "75843f26-9aa8-4f3a-957a-863ebc466d56",
+                        "name": "美容",
+                        "color": "default",
+                        "description": null
+                    },
+                    {
+                        "id": "9ec702d0-8484-4ecb-8345-327f4f673924",
+                        "name": "ファスティング",
+                        "color": "yellow",
+                        "description": null
+                    },
+                    {
+                        "id": "c956bf47-dd41-488d-896a-da5979fe2701",
+                        "name": "Saas",
+                        "color": "gray",
+                        "description": null
+                    }
+                ]
+            }
+        },
+        "特記": {
+            "id": "V%5C%3AJ",
+            "name": "特記",
+            "description": null,
+            "type": "rich_text",
+            "rich_text": {}
+        },
+        "種別": {
+            "id": "%5BanH",
+            "name": "種別",
+            "description": null,
+            "type": "select",
+            "select": {
+                "options": [
+                    {
+                        "id": "L}{U",
+                        "name": "個人",
+                        "color": "brown",
+                        "description": null
+                    },
+                    {
+                        "id": "QvYY",
+                        "name": "企業",
+                        "color": "pink",
+                        "description": null
+                    }
+                ]
+            }
+        },
+        "案件進捗": {
+            "id": "%5DSH%5C",
+            "name": "案件進捗",
+            "description": null,
+            "type": "formula",
+            "formula": {
+                "expression": "if(empty({{notion:block_property:WSBO:00000000-0000-0000-0000-000000000000:7eb5cd8b-6e7a-484c-9fa6-86bae4bea15f}}),\"受注案件なし\",if(includes({{notion:block_property:WSBO:00000000-0000-0000-0000-000000000000:7eb5cd8b-6e7a-484c-9fa6-86bae4bea15f}},\"未着手\"),\"未着手\",if({{notion:block_property:WSBO:00000000-0000-0000-0000-000000000000:7eb5cd8b-6e7a-484c-9fa6-86bae4bea15f}},if(empty(replaceAll(replaceAll({{notion:block_property:WSBO:00000000-0000-0000-0000-000000000000:7eb5cd8b-6e7a-484c-9fa6-86bae4bea15f}}, \"完了\", \"\"), \",\", \"\")), \"完了\", \"進行中\"),\"\"))) "
+            }
+        },
+        "受注費総計": {
+            "id": "%5E%7BC%5D",
+            "name": "受注費総計",
+            "description": null,
+            "type": "formula",
+            "formula": {
+                "expression": "sum({{notion:block_property:qVVQ:00000000-0000-0000-0000-000000000000:7eb5cd8b-6e7a-484c-9fa6-86bae4bea15f}})+{{notion:block_property:Lmsd:00000000-0000-0000-0000-000000000000:7eb5cd8b-6e7a-484c-9fa6-86bae4bea15f}}"
+            }
+        },
+        "月額費用": {
+            "id": "%60GBV",
+            "name": "月額費用",
+            "description": null,
+            "type": "number",
+            "number": {
+                "format": "yen"
+            }
+        },
+        "進捗状況 ": {
+            "id": "bW%5Ea",
+            "name": "進捗状況 ",
+            "description": null,
+            "type": "select",
+            "select": {
+                "options": [
+                    {
+                        "id": ";``y",
+                        "name": "見込み",
+                        "color": "yellow",
+                        "description": null
+                    },
+                    {
+                        "id": "TB`P",
+                        "name": "進行中",
+                        "color": "blue",
+                        "description": null
+                    },
+                    {
+                        "id": "xad`",
+                        "name": "契約",
+                        "color": "red",
+                        "description": null
+                    },
+                    {
+                        "id": "10888a12-10ec-4c59-bd31-9a3684886428",
+                        "name": "運用中",
+                        "color": "purple",
+                        "description": null
+                    },
+                    {
+                        "id": "56e6074e-3267-4008-8d7f-664b9c6ea245",
+                        "name": "納品済み",
+                        "color": "orange",
+                        "description": null
+                    }
+                ]
+            }
+        },
+        "プロジェクト期限": {
+            "id": "stZx",
+            "name": "プロジェクト期限",
+            "description": null,
+            "type": "date",
+            "date": {}
+        },
+        "案件名": {
+            "id": "title",
+            "name": "案件名",
+            "description": "",
+            "type": "title",
+            "title": {}
+        }
+    },
+    "parent": {
+        "type": "page_id",
+        "page_id": "1b29707a-4e5d-801b-ba94-ece73b10fdda"
+    },
+    "url": "https://www.notion.so/19d9707a4e5d800da40fdec078f895df",
+    "public_url": null,
+    "in_trash": false,
+    "archived": false,
+    "developer_survey": "https://notionup.typeform.com/to/bllBsoI4?utm_source=postman",
+    "request_id": "050a89b7-22e3-4a57-81d0-14314540b1ab"
+}

@@ -1,0 +1,17 @@
+# 認証情報
+.AccountInfo
+
+# Claude Code ローカル設定
+.claude/
+
+# Next.js
+web/.next/
+web/node_modules/
+web/.env.local
+web/.env*.local
+web/tsconfig.tsbuildinfo
+web/next-env.d.ts
+
+# OS
+.DS_Store
+Thumbs.db
