@@ -142,7 +142,13 @@ export function OrderEditForm({ order }: { order: Order }) {
           }}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder={projects.length === 0 ? '読み込み中...' : '案件を選択...'} />
+            <SelectValue>
+              {(v: unknown) => {
+                const id = v as string
+                if (!id) return projects.length === 0 ? '読み込み中...' : '案件を選択...'
+                return projects.find((p) => p.id === id)?.name ?? id
+              }}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {filteredProjects.length === 0 && (
