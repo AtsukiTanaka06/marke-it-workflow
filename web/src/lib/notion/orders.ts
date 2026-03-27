@@ -212,27 +212,13 @@ export async function getOrder(id: string): Promise<Order> {
   return toOrder(page as PageObjectResponse)
 }
 
-async function getDefaultOrderTemplateId(): Promise<string | null> {
-  const notion = await getNotionClient()
-  try {
-    const res = await withRateLimit(() =>
-      notion.dataSources.listTemplates({ data_source_id: ORDERS_DATA_SOURCE_ID })
-    )
-    return res.templates.find((t) => t.is_default)?.id ?? null
-  } catch {
-    return null
-  }
-}
-
 export async function createOrder(data: CreateOrderInput): Promise<Order> {
   const notion = await getNotionClient()
-  const templateId = await getDefaultOrderTemplateId()
 
   const page = await withRateLimit(() =>
     notion.pages.create({
       parent: { database_id: ORDERS_DB_ID },
       properties: buildOrderProperties(data),
-      ...(templateId ? { template: { type: 'template_id' as const, template_id: templateId } } : {}),
     })
   )
 
