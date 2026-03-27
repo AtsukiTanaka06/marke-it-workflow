@@ -184,13 +184,27 @@ export async function getProject(id: string): Promise<Project> {
   return toProject(page as PageObjectResponse)
 }
 
+async function getDefaultProjectTemplateId(): Promise<string | null> {
+  const notion = await getNotionClient()
+  try {
+    const res = await withRateLimit(() =>
+      notion.dataSources.listTemplates({ data_source_id: PROJECTS_DATA_SOURCE_ID })
+    )
+    return res.templates.find((t) => t.is_default)?.id ?? null
+  } catch {
+    return null
+  }
+}
+
 export async function createProject(data: CreateProjectInput): Promise<Project> {
   const notion = await getNotionClient()
+  const templateId = await getDefaultProjectTemplateId()
 
   const page = await withRateLimit(() =>
     notion.pages.create({
       parent: { database_id: PROJECTS_DB_ID },
       properties: buildProjectProperties(data),
+      ...(templateId ? { template: { type: 'template_id' as const, template_id: templateId } } : {}),
     })
   )
 
