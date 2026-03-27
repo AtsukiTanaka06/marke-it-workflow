@@ -18,6 +18,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Separator } from '@/components/ui/separator'
 import type { Order, OrderStatus, OperationStatus, Project } from '@/types/notion'
 
 const schema = z.object({
@@ -52,6 +54,7 @@ export function OrderCreateModal({ onCreated }: Props) {
   const [projects, setProjects] = useState<Project[]>([])
   const [projectSearch, setProjectSearch] = useState('')
   const [selectedProjectId, setSelectedProjectId] = useState('')
+  const [createWorkflow, setCreateWorkflow] = useState(true)
 
   const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -80,6 +83,7 @@ export function OrderCreateModal({ onCreated }: Props) {
     reset()
     setProjectSearch('')
     setSelectedProjectId('')
+    setCreateWorkflow(true)
   }
 
   async function onSubmit(values: FormValues) {
@@ -92,6 +96,7 @@ export function OrderCreateModal({ onCreated }: Props) {
       deadline:        values.deadline || null,
       content:         values.content ? toRichText(values.content) : undefined,
       notes:           values.notes   ? toRichText(values.notes)   : undefined,
+      createWorkflow,
     }
 
     const res = await fetch('/api/notion/orders', {
@@ -213,6 +218,20 @@ export function OrderCreateModal({ onCreated }: Props) {
           <div className="space-y-1">
             <Label htmlFor="notes">備考</Label>
             <Textarea id="notes" rows={2} {...register('notes')} />
+          </div>
+
+          <Separator />
+
+          {/* ワークフロー作成オプション */}
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="createWorkflow"
+              checked={createWorkflow}
+              onCheckedChange={(v: boolean | 'indeterminate') => setCreateWorkflow(v === true)}
+            />
+            <Label htmlFor="createWorkflow" className="cursor-pointer font-normal">
+              ワークフローを作成する（タスクテンプレから進行タスクを登録）
+            </Label>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
