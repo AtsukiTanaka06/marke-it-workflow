@@ -134,7 +134,7 @@ export function OrderEditForm({ order }: { order: Order }) {
           className="h-9 text-sm"
         />
         <Select
-          value={selectedProjectId || undefined}
+          value={selectedProjectId}
           onValueChange={(v) => {
             const id = v as string
             setSelectedProjectId(id)
