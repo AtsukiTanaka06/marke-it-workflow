@@ -4,6 +4,7 @@ import type {
 } from '@notionhq/client/build/src/api-endpoints'
 import { getNotionClient } from './client'
 import { withRateLimit } from './rate-limit'
+import { applyDefaultTemplate } from './template-blocks'
 import type {
   Project,
   ProjectStatus,
@@ -194,7 +195,16 @@ export async function createProject(data: CreateProjectInput): Promise<Project> 
     })
   )
 
-  return toProject(page as PageObjectResponse)
+  const project = toProject(page as PageObjectResponse)
+
+  // デフォルトテンプレートのブロックを追記（失敗しても作成自体は成功とする）
+  try {
+    await applyDefaultTemplate(project.id, PROJECTS_DATA_SOURCE_ID)
+  } catch (err) {
+    console.error('[template] 案件テンプレート適用エラー:', err)
+  }
+
+  return project
 }
 
 export async function updateProject(

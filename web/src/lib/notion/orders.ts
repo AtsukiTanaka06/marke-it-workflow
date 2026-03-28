@@ -4,6 +4,7 @@ import type {
 } from '@notionhq/client/build/src/api-endpoints'
 import { getNotionClient } from './client'
 import { withRateLimit } from './rate-limit'
+import { applyDefaultTemplate } from './template-blocks'
 import type {
   Order,
   OrderStatus,
@@ -222,7 +223,16 @@ export async function createOrder(data: CreateOrderInput): Promise<Order> {
     })
   )
 
-  return toOrder(page as PageObjectResponse)
+  const order = toOrder(page as PageObjectResponse)
+
+  // デフォルトテンプレートのブロックを追記（失敗しても作成自体は成功とする）
+  try {
+    await applyDefaultTemplate(order.id, ORDERS_DATA_SOURCE_ID)
+  } catch (err) {
+    console.error('[template] 受注テンプレート適用エラー:', err)
+  }
+
+  return order
 }
 
 export async function updateOrder(id: string, data: UpdateOrderInput): Promise<Order> {
