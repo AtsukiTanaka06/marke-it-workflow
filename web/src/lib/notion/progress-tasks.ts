@@ -4,10 +4,11 @@ import type { TaskTemplate } from './task-templates'
 
 const PROGRESS_TASKS_DB_ID = 'e5d9707a-4e5d-83d6-9ccf-015b8e0e96ed'
 
-// ─── プロパティID定数 ─────────────────────────────────────────────────────────
+// ─── プロパティキー ───────────────────────────────────────────────────────────
+// ID(%60%5CSG) は特殊文字を含みエンコード解釈が不安定なため、プロパティ名で指定
 const PROP = {
-  NAME:  'title',    // タスク内容
-  ORDER: '`\\CSG',  // 受注一覧 (relation) — URL-decoded from %60%5CSG
+  NAME:  'title',    // タスク内容 (title)
+  ORDER: '受注一覧',  // relation → 受注一覧DB
   PHASE: 'lGMd',    // フェーズ (select)
 } as const
 
