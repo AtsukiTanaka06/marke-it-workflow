@@ -7,17 +7,26 @@ import { withRateLimit } from './rate-limit'
 
 const TASK_TEMPLATE_DB_ID = '4f39707a-4e5d-82f6-b56f-810bcfa8d05f'
 
-// ─── プロパティID定数 ─────────────────────────────────────────────────────────
-const PROP = {
-  NAME:  'title',  // タスク名
+// ─── フィルター・ソート用プロパティID（確認済み・動作中） ──────────────────────
+const FILTER_PROP = {
   VALID: 'XTSP',  // 有効 (checkbox)
-  PHASE: ':W<j',  // フェーズ (select) — URL-decoded from %3AW%3Cj
-  ORDER: 'pFqQ',  // 順番 (number, for sorting)
+} as const
+
+// ─── 値読み取り用プロパティ名（名前ベースアクセス） ───────────────────────────
+const READ_PROP = {
+  PHASE:         'フェーズ',       // select
+  ORDER:         '順序',           // number
+  DOCUMENT_NAME: 'ドキュメント名',  // rich_text
+  PARENT_ITEM:   '親アイテム',      // relation (sub-item の親ページID)
 } as const
 
 export type TaskTemplate = {
-  name:  string
-  phase: string | null
+  id:               string        // テンプレートページID（親子照合用）
+  name:             string
+  phase:            string | null
+  order:            number | null
+  documentName:     string | null
+  parentTemplateId: string | null // null = 親タスク、string = 子タスクの親テンプレートID
 }
 
 // data_source_id を databases.retrieve から動的取得してキャッシュ
@@ -38,31 +47,49 @@ async function getDataSourceId(): Promise<string> {
   return _cachedDataSourceId
 }
 
-// ─── 有効なテンプレートを順番順で取得 ──────────────────────────────────────────
+// ─── 有効なテンプレートを順序順で取得（サブアイテム含む） ──────────────────────
 
 export async function listActiveTemplates(): Promise<TaskTemplate[]> {
-  const notion      = await getNotionClient()
+  const notion       = await getNotionClient()
   const dataSourceId = await getDataSourceId()
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const response = await withRateLimit(() =>
     notion.dataSources.query({
       data_source_id: dataSourceId,
-      filter: { property: PROP.VALID, checkbox: { equals: true } },
-      sorts:  [{ property: PROP.ORDER, direction: 'ascending' }],
+      filter: { property: FILTER_PROP.VALID, checkbox: { equals: true } },
+      sorts:  [{ property: READ_PROP.ORDER, direction: 'ascending' }],
     } as Parameters<typeof notion.dataSources.query>[0])
   )
 
   return response.results
     .filter((r): r is PageObjectResponse => r.object === 'page' && 'properties' in r)
     .map((page) => {
-      const props    = page.properties
-      const nameProp  = Object.values(props).find((p) => p.id === PROP.NAME)
-      const phaseProp = Object.values(props).find((p) => p.id === PROP.PHASE)
+      const props = page.properties
+
+      const titleProp      = Object.values(props).find((p) => p.type === 'title')
+      const phaseProp      = props[READ_PROP.PHASE]
+      const orderProp      = props[READ_PROP.ORDER]
+      const docNameProp    = props[READ_PROP.DOCUMENT_NAME]
+      const parentItemProp = props[READ_PROP.PARENT_ITEM]
 
       return {
-        name:  nameProp?.type  === 'title'  ? nameProp.title.map((t) => t.plain_text).join('') : '',
-        phase: phaseProp?.type === 'select' ? phaseProp.select?.name ?? null : null,
+        id:   page.id,
+        name: titleProp?.type === 'title'
+          ? titleProp.title.map((t) => t.plain_text).join('')
+          : '',
+        phase: phaseProp?.type === 'select'
+          ? phaseProp.select?.name ?? null
+          : null,
+        order: orderProp?.type === 'number'
+          ? orderProp.number
+          : null,
+        documentName: docNameProp?.type === 'rich_text'
+          ? docNameProp.rich_text.map((t) => t.plain_text).join('').trim() || null
+          : null,
+        parentTemplateId: parentItemProp?.type === 'relation' && parentItemProp.relation.length > 0
+          ? parentItemProp.relation[0].id
+          : null,
       }
     })
     .filter((t) => t.name)

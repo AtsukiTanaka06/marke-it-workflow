@@ -4,7 +4,7 @@ import type {
 } from '@notionhq/client/build/src/api-endpoints'
 import { getNotionClient } from './client'
 import { withRateLimit } from './rate-limit'
-import { applyDefaultTemplate } from './template-blocks'
+
 import type {
   Project,
   ProjectStatus,
@@ -28,6 +28,7 @@ const PROP = {
   CONTRACT_CONTENT: 'LmZa',    // 契約内容
   NOTES:            'V\\:J',   // 特記
   PROGRESS:         ']SH\\',   // 案件進捗 (formula, read-only)
+  ASSIGNEE:         '担当者',   // 担当者 (people) — プロパティ名で指定
 } as const
 
 export const PROJECTS_DB_ID = '19d9707a-4e5d-800d-a40f-dec078f895df'
@@ -80,6 +81,8 @@ function toProject(page: PageObjectResponse): Project {
   const contractProp = prop(props, PROP.CONTRACT_CONTENT)
   const notesProp = prop(props, PROP.NOTES)
   const progressProp = prop(props, PROP.PROGRESS)
+  // 担当者はプロパティ名でキー参照（IDが不明なため）
+  const assigneeProp = props[PROP.ASSIGNEE]
 
   return {
     id: page.id,
@@ -122,6 +125,10 @@ function toProject(page: PageObjectResponse): Project {
       progressProp?.type === 'formula' && progressProp.formula.type === 'string'
         ? progressProp.formula.string
         : null,
+    assigneeIds:
+      assigneeProp?.type === 'people'
+        ? assigneeProp.people.map((u) => u.id)
+        : [],
     createdAt: page.created_time,
     lastEditedAt: page.last_edited_time,
   }
@@ -197,13 +204,6 @@ export async function createProject(data: CreateProjectInput): Promise<Project> 
 
   const project = toProject(page as PageObjectResponse)
 
-  // デフォルトテンプレートのブロックを追記（失敗しても作成自体は成功とする）
-  try {
-    await applyDefaultTemplate(project.id, PROJECTS_DATA_SOURCE_ID)
-  } catch (err) {
-    console.error('[template] 案件テンプレート適用エラー:', err)
-  }
-
   return project
 }
 
@@ -256,6 +256,9 @@ function buildProjectProperties(data: UpdateProjectInput): Record<string, any> {
   }
   if (data.notes !== undefined) {
     props[PROP.NOTES] = { rich_text: toRichTextParam(data.notes) }
+  }
+  if (data.assigneeIds !== undefined) {
+    props[PROP.ASSIGNEE] = { people: data.assigneeIds.map((id) => ({ id })) }
   }
 
   return props

@@ -36,6 +36,7 @@ export type Project = {
   contractContent: RichTextItem[]  // 契約内容 (rich_text, ID: LmZa)
   notes: RichTextItem[]            // 特記 (rich_text, ID: V\:J)
   progress: string | null          // 案件進捗 (formula, read-only, ID: ]SH\)
+  assigneeIds: string[]            // 担当者 (people) Notion user ID
   createdAt: string
   lastEditedAt: string
 }
@@ -50,6 +51,7 @@ export type CreateProjectInput = {
   monthlyCost?: number | null
   contractContent?: RichTextItem[]
   notes?: RichTextItem[]
+  assigneeIds?: string[]
 }
 
 export type UpdateProjectInput = Partial<CreateProjectInput>
@@ -96,6 +98,7 @@ export type CreateOrderInput = {
   deadline?: string | null
   rating?: string[]
   achievement?: RichTextItem[]
+  googleDriveUrl?: string | null
 }
 
 export type UpdateOrderInput = Partial<CreateOrderInput>

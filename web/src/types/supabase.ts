@@ -46,6 +46,12 @@ export type Database = {
           id: string
           notion_token_encrypted: string | null
           active_ai_provider: 'openai' | 'anthropic' | 'google' | null
+          google_drive_template_folder_id: string | null
+          google_drive_work_folder_id: string | null
+          google_service_account_encrypted: string | null
+          google_oauth_client_id: string | null
+          google_oauth_client_secret_encrypted: string | null
+          google_oauth_refresh_token_encrypted: string | null
           created_at: string
           updated_at: string
         }
@@ -53,13 +59,44 @@ export type Database = {
           id?: string
           notion_token_encrypted?: string | null
           active_ai_provider?: 'openai' | 'anthropic' | 'google' | null
+          google_drive_template_folder_id?: string | null
+          google_drive_work_folder_id?: string | null
+          google_service_account_encrypted?: string | null
+          google_oauth_client_id?: string | null
+          google_oauth_client_secret_encrypted?: string | null
+          google_oauth_refresh_token_encrypted?: string | null
           created_at?: string
           updated_at?: string
         }
         Update: {
           notion_token_encrypted?: string | null
           active_ai_provider?: 'openai' | 'anthropic' | 'google' | null
+          google_drive_template_folder_id?: string | null
+          google_drive_work_folder_id?: string | null
+          google_service_account_encrypted?: string | null
+          google_oauth_client_id?: string | null
+          google_oauth_client_secret_encrypted?: string | null
+          google_oauth_refresh_token_encrypted?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      notion_users: {
+        Row: {
+          notion_user_id: string
+          name: string
+          avatar_url: string | null
+          created_at: string
+        }
+        Insert: {
+          notion_user_id: string
+          name: string
+          avatar_url?: string | null
+          created_at?: string
+        }
+        Update: {
+          name?: string
+          avatar_url?: string | null
         }
         Relationships: []
       }
@@ -95,3 +132,4 @@ export type Database = {
 export type Profile = Database['public']['Tables']['profiles']['Row']
 export type SystemSettings = Database['public']['Tables']['system_settings']['Row']
 export type AiApiKey = Database['public']['Tables']['ai_api_keys']['Row']
+export type RegisteredNotionUser = Database['public']['Tables']['notion_users']['Row']

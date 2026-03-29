@@ -1,12 +1,17 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import dynamic from 'next/dynamic'
 import { useOrderFilter } from '@/store/orderFilterStore'
 import { OrderCard } from './OrderCard'
 import { OrderFilters } from './OrderFilters'
 import { PaginationUI } from '@/components/projects/Pagination'
-import { OrderCreateModal } from './OrderCreateModal'
 import type { Order, PaginatedResult } from '@/types/notion'
+
+const OrderCreateModal = dynamic(
+  () => import('./OrderCreateModal').then((m) => ({ default: m.OrderCreateModal })),
+  { ssr: false }
+)
 
 export function OrdersView() {
   const { search, status, operationStatus, cursorStack, currentPage, goNext, goPrev } = useOrderFilter()

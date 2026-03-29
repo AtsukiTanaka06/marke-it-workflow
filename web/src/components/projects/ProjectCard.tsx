@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -18,7 +19,7 @@ function fmt(n: number | null) {
   return n.toLocaleString('ja-JP') + '円'
 }
 
-export function ProjectCard({ project }: { project: Project }) {
+export const ProjectCard = memo(function ProjectCard({ project }: { project: Project }) {
   return (
     <Link href={`/projects/${project.id}`} className="block group">
       <Card className="h-full border border-border transition-shadow group-hover:shadow-md group-hover:border-primary/30">
@@ -69,4 +70,4 @@ export function ProjectCard({ project }: { project: Project }) {
       </Card>
     </Link>
   )
-}
+})

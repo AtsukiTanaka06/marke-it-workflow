@@ -1,12 +1,17 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import dynamic from 'next/dynamic'
 import { useProjectFilter } from '@/store/filterStore'
 import { ProjectCard } from './ProjectCard'
 import { ProjectFilters } from './ProjectFilters'
 import { Pagination } from './Pagination'
-import { ProjectCreateModal } from './ProjectCreateModal'
 import type { Project, PaginatedResult } from '@/types/notion'
+
+const ProjectCreateModal = dynamic(
+  () => import('./ProjectCreateModal').then((m) => ({ default: m.ProjectCreateModal })),
+  { ssr: false }
+)
 
 export function ProjectsView() {
   const { search, status, type, cursorStack, currentPage } = useProjectFilter()

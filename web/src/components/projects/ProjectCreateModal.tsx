@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import type { Project, ProjectStatus, ProjectType } from '@/types/notion'
+import { NotionUserPicker } from '@/components/notion/NotionUserPicker'
 
 const schema = z.object({
   name: z.string().min(1, '案件名は必須です'),
@@ -41,6 +42,7 @@ type Props = {
 
 export function ProjectCreateModal({ onCreated }: Props) {
   const [open, setOpen] = useState(false)
+  const [assigneeIds, setAssigneeIds] = useState<string[]>([])
   const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
   })
@@ -56,6 +58,7 @@ export function ProjectCreateModal({ onCreated }: Props) {
       notes: values.notes
         ? [{ text: values.notes, annotations: { bold: false, italic: false, strikethrough: false, underline: false, code: false }, href: null }]
         : undefined,
+      assigneeIds: assigneeIds.length > 0 ? assigneeIds : undefined,
     }
 
     const res = await fetch('/api/notion/projects', {
@@ -74,6 +77,7 @@ export function ProjectCreateModal({ onCreated }: Props) {
     onCreated(project)
     setOpen(false)
     reset()
+    setAssigneeIds([])
   }
 
   return (
@@ -83,11 +87,12 @@ export function ProjectCreateModal({ onCreated }: Props) {
         <Plus className="size-4" />
         新規作成
       </DialogTrigger>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
+      <DialogContent className="max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+        <DialogHeader className="shrink-0">
           <DialogTitle>案件を新規作成</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
+        <div className="space-y-4 pt-2 overflow-y-auto flex-1 pr-1">
           <div className="space-y-1">
             <Label htmlFor="name">案件名 <span className="text-destructive">*</span></Label>
             <Input id="name" {...register('name')} />
@@ -140,8 +145,11 @@ export function ProjectCreateModal({ onCreated }: Props) {
             <Textarea id="notes" rows={3} {...register('notes')} />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => setOpen(false)}>
+          <NotionUserPicker value={assigneeIds} onChange={setAssigneeIds} />
+
+          </div>{/* end scrollable area */}
+          <div className="flex justify-end gap-2 pt-3 shrink-0 border-t mt-3">
+            <Button type="button" variant="outline" size="sm" onClick={() => { setOpen(false); reset(); setAssigneeIds([]) }}>
               キャンセル
             </Button>
             <Button type="submit" size="sm" disabled={isSubmitting}>

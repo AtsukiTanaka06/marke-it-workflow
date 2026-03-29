@@ -34,7 +34,7 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 認証不要なパス
-  const publicPaths = ['/login', '/invite']
+  const publicPaths = ['/login', '/invite', '/forgot-password', '/reset-password']
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path))
 
   // 未ログインかつ保護されたパスへのアクセス → /login にリダイレクト

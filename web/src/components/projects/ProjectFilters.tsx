@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useProjectFilter } from '@/store/filterStore'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -11,6 +12,16 @@ const TYPES: ProjectType[] = ['個人', '企業']
 
 export function ProjectFilters() {
   const { search, status, type, setSearch, setStatus, setType, reset } = useProjectFilter()
+  const [inputValue, setInputValue] = useState(search)
+
+  // ストアがリセットされたときローカル入力値を同期
+  useEffect(() => { setInputValue(search) }, [search])
+
+  // 入力から 300ms 後にストアを更新（デバウンス）
+  useEffect(() => {
+    const id = setTimeout(() => setSearch(inputValue), 300)
+    return () => clearTimeout(id)
+  }, [inputValue, setSearch])
 
   const isDirty = search !== '' || status !== '' || type !== ''
 
@@ -18,8 +29,8 @@ export function ProjectFilters() {
     <div className="flex flex-wrap items-center gap-2">
       <Input
         placeholder="案件名で検索..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
         className="h-8 w-52 text-sm"
       />
 

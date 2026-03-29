@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -22,7 +23,7 @@ function fmt(n: number | null) {
   return n.toLocaleString('ja-JP') + '円'
 }
 
-export function OrderCard({ order }: { order: Order }) {
+export const OrderCard = memo(function OrderCard({ order }: { order: Order }) {
   return (
     <Link href={`/orders/${order.id}`} className="block group">
       <Card className="h-full border border-border transition-shadow group-hover:shadow-md group-hover:border-primary/30">
@@ -64,4 +65,4 @@ export function OrderCard({ order }: { order: Order }) {
       </Card>
     </Link>
   )
-}
+})

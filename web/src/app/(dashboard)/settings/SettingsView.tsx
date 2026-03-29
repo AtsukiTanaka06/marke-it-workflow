@@ -7,9 +7,11 @@ import { ProfileSection } from '@/components/settings/ProfileSection'
 import { UserManagementSection } from '@/components/settings/UserManagementSection'
 import { NotionSettingsSection } from '@/components/settings/NotionSettingsSection'
 import { AISettingsSection } from '@/components/settings/AISettingsSection'
+import { GoogleDriveSection } from '@/components/settings/GoogleDriveSection'
+import { NotionUsersSection } from '@/components/settings/NotionUsersSection'
 import type { Profile } from '@/types/supabase'
 
-type Tab = 'profile' | 'users' | 'notion' | 'ai'
+type Tab = 'profile' | 'users' | 'notion' | 'notionUsers' | 'ai' | 'google'
 
 type Props = {
   profile: Profile
@@ -18,9 +20,11 @@ type Props = {
 
 const TABS: { id: Tab; label: string; adminOnly?: boolean }[] = [
   { id: 'profile', label: 'プロフィール' },
-  { id: 'users',   label: 'ユーザー管理', adminOnly: true },
-  { id: 'notion',  label: 'Notion 連携',  adminOnly: true },
-  { id: 'ai',      label: 'AI 設定',      adminOnly: true },
+  { id: 'users',   label: 'ユーザー管理',     adminOnly: true },
+  { id: 'notion',      label: 'Notion 連携',      adminOnly: true },
+  { id: 'notionUsers', label: 'ユーザー登録',    adminOnly: true },
+  { id: 'ai',          label: 'AI 設定',          adminOnly: true },
+  { id: 'google',  label: 'Google Drive 連携', adminOnly: true },
 ]
 
 export function SettingsView({ profile, email }: Props) {
@@ -65,8 +69,14 @@ export function SettingsView({ profile, email }: Props) {
         {activeTab === 'notion' && isAdmin && (
           <NotionSettingsSection />
         )}
+        {activeTab === 'notionUsers' && isAdmin && (
+          <NotionUsersSection />
+        )}
         {activeTab === 'ai' && isAdmin && (
           <AISettingsSection />
+        )}
+        {activeTab === 'google' && isAdmin && (
+          <GoogleDriveSection />
         )}
       </div>
     </div>

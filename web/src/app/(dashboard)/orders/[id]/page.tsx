@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ChevronLeft, ExternalLink } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { getOrder } from '@/lib/notion/orders'
-import { OrderEditForm } from './OrderEditForm'
+import { OrderDetailTabs } from './OrderDetailTabs'
 import type { OrderStatus } from '@/types/notion'
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
@@ -83,10 +83,8 @@ export default async function OrderDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* 編集フォーム */}
-      <div className="rounded-lg border bg-card p-6">
-        <OrderEditForm order={order} />
-      </div>
+      {/* タブ切り替えコンテンツ */}
+      <OrderDetailTabs order={order} />
     </div>
   )
 }

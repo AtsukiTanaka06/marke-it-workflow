@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus } from 'lucide-react'
+import { Plus, FolderOpen } from 'lucide-react' // FolderOpen: Drive フォルダ選択 UI で使用
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,6 +21,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import type { Order, OrderStatus, OperationStatus, Project } from '@/types/notion'
+import { NotionUserPicker } from '@/components/notion/NotionUserPicker'
+
+type DriveFolder = { id: string; name: string }
 
 const schema = z.object({
   name:            z.string().min(1, '受注項目名は必須です'),
@@ -55,6 +58,13 @@ export function OrderCreateModal({ onCreated }: Props) {
   const [projectSearch, setProjectSearch] = useState('')
   const [selectedProjectId, setSelectedProjectId] = useState('')
   const [createWorkflow, setCreateWorkflow] = useState(true)
+  const [assigneeIds, setAssigneeIds] = useState<string[]>([])
+  const [driveFolders, setDriveFolders] = useState<DriveFolder[]>([])
+  const [driveFoldersLoading, setDriveFoldersLoading] = useState(false)
+  const [driveFoldersError, setDriveFoldersError] = useState<string | null>(null)
+  const [selectedDriveFolderId, setSelectedDriveFolderId] = useState('')
+  const [docCustomerName, setDocCustomerName] = useState('')
+  const [docLStepFee, setDocLStepFee] = useState('')
 
   const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -68,6 +78,24 @@ export function OrderCreateModal({ onCreated }: Props) {
       .then((d) => setProjects(d.items ?? []))
       .catch(() => toast.error('案件一覧の取得に失敗しました'))
   }, [open])
+
+  // ワークフロー作成チェック時にドライブフォルダ一覧を取得
+  useEffect(() => {
+    if (!open || !createWorkflow) return
+    if (driveFolders.length > 0) return
+    setDriveFoldersLoading(true)
+    fetch('/api/google/drive/folders')
+      .then((r) => {
+        if (!r.ok) return r.text().then((t) => { throw new Error(t) })
+        return r.json()
+      })
+      .then((d: { folders: DriveFolder[] }) => setDriveFolders(d.folders))
+      .catch((err: Error) => {
+        setDriveFoldersError(err.message)
+        console.warn('[drive] フォルダ一覧取得失敗:', err.message)
+      })
+      .finally(() => setDriveFoldersLoading(false))
+  }, [open, createWorkflow, driveFolders.length])
 
   // 検索で絞り込みつつ、選択中の案件は常にリストに含める
   const baseFiltered = projects.filter((p) =>
@@ -84,9 +112,17 @@ export function OrderCreateModal({ onCreated }: Props) {
     setProjectSearch('')
     setSelectedProjectId('')
     setCreateWorkflow(true)
+    setSelectedDriveFolderId('')
+    setDriveFolders([])
+    setDriveFoldersError(null)
+    setAssigneeIds([])
+    setDocCustomerName('')
+    setDocLStepFee('')
   }
 
   async function onSubmit(values: FormValues) {
+    const selectedFolder = driveFolders.find((f) => f.id === selectedDriveFolderId)
+
     const body = {
       name:            values.name,
       projectId:       values.projectId,
@@ -96,7 +132,17 @@ export function OrderCreateModal({ onCreated }: Props) {
       deadline:        values.deadline || null,
       content:         values.content ? toRichText(values.content) : undefined,
       notes:           values.notes   ? toRichText(values.notes)   : undefined,
+      assigneeIds:     assigneeIds.length > 0 ? assigneeIds : undefined,
       createWorkflow,
+      // Drive フォルダ選択時はサーバー側でコピー → GoogleドライブURL に書き込み
+      ...(selectedFolder ? {
+        driveFolderId:   selectedFolder.id,
+        driveFolderName: selectedFolder.name,
+        docReplacements: {
+          ...(docCustomerName ? { '{{顧客名}}': docCustomerName } : {}),
+          ...(docLStepFee     ? { '{{LStep構築費用}}': docLStepFee } : {}),
+        },
+      } : {}),
     }
 
     const res = await fetch('/api/notion/orders', {
@@ -119,11 +165,12 @@ export function OrderCreateModal({ onCreated }: Props) {
         <Plus className="size-4" />
         新規作成
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
+      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+        <DialogHeader className="shrink-0">
           <DialogTitle>受注を新規作成</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
+        <div className="space-y-4 pt-2 overflow-y-auto flex-1 pr-1">
 
           {/* 受注項目名 */}
           <div className="space-y-1">
@@ -147,6 +194,8 @@ export function OrderCreateModal({ onCreated }: Props) {
                 const id = v as string
                 setSelectedProjectId(id)
                 setValue('projectId', id, { shouldValidate: true })
+                const project = projects.find((p) => p.id === id)
+                if (project) setDocCustomerName(project.name)
               }}
             >
               <SelectTrigger className="h-9 w-full">
@@ -220,6 +269,8 @@ export function OrderCreateModal({ onCreated }: Props) {
             <Textarea id="notes" rows={2} {...register('notes')} />
           </div>
 
+          <NotionUserPicker value={assigneeIds} onChange={setAssigneeIds} />
+
           <Separator />
 
           {/* ワークフロー作成オプション */}
@@ -234,7 +285,90 @@ export function OrderCreateModal({ onCreated }: Props) {
             </Label>
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          {/* Drive フォルダ選択（ワークフロー作成時のみ表示） */}
+          {createWorkflow && (
+            <div className="space-y-1 pl-6">
+              <Label className="flex items-center gap-1.5">
+                <FolderOpen className="size-3.5" />
+                テンプレートフォルダ（任意）
+              </Label>
+              {driveFoldersLoading ? (
+                <p className="text-xs text-muted-foreground">フォルダ一覧を読み込み中...</p>
+              ) : driveFoldersError ? (
+                <p className="text-xs text-destructive">
+                  エラー: {driveFoldersError}
+                </p>
+              ) : driveFolders.length === 0 ? (
+                <p className="text-xs text-muted-foreground">
+                  フォルダが見つかりませんでした（テンプレートドライブが空か、アクセス権がない可能性があります）
+                </p>
+              ) : (
+                <Select
+                  value={selectedDriveFolderId}
+                  onValueChange={(v) => setSelectedDriveFolderId(v as string)}
+                >
+                  <SelectTrigger className="h-9">
+                    <SelectValue>
+                      {(v: unknown) => {
+                        const id = v as string
+                        if (!id) return 'フォルダを選択（省略可）'
+                        return driveFolders.find((f) => f.id === id)?.name ?? id
+                      }}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {driveFolders.map((f) => (
+                      <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              <p className="text-xs text-muted-foreground">
+                選択したフォルダが作業ドライブにコピーされます
+              </p>
+            </div>
+          )}
+
+          {/* ドキュメント差し込みフィールド（フォルダ選択時のみ） */}
+          {createWorkflow && selectedDriveFolderId && (
+            <div className="pl-6 space-y-3">
+              <p className="text-xs font-medium text-muted-foreground">
+                ドキュメント内の差し込み内容
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="docCustomerName" className="text-xs">
+                    {'{{顧客名}}'}
+                  </Label>
+                  <Input
+                    id="docCustomerName"
+                    value={docCustomerName}
+                    onChange={(e) => setDocCustomerName(e.target.value)}
+                    placeholder="案件名が自動入力されます"
+                    className="h-8 text-sm"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="docLStepFee" className="text-xs">
+                    {'{{LStep構築費用}}'}
+                  </Label>
+                  <Input
+                    id="docLStepFee"
+                    value={docLStepFee}
+                    onChange={(e) => setDocLStepFee(e.target.value)}
+                    placeholder="例: 100,000円"
+                    className="h-8 text-sm"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Google ドキュメント内の該当プレースホルダーを上記の値に置き換えます
+              </p>
+            </div>
+          )}
+
+          </div>{/* end scrollable area */}
+          <div className="flex justify-end gap-2 pt-3 shrink-0 border-t mt-3">
             <Button type="button" variant="outline" size="sm" onClick={handleClose}>
               キャンセル
             </Button>

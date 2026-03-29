@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useOrderFilter } from '@/store/orderFilterStore'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -14,6 +15,16 @@ const OPERATION_STATUSES: OperationStatus[] = ['運用中', '運用終了']
 
 export function OrderFilters() {
   const { search, status, operationStatus, setSearch, setStatus, setOperationStatus, reset } = useOrderFilter()
+  const [inputValue, setInputValue] = useState(search)
+
+  // ストアがリセットされたときローカル入力値を同期
+  useEffect(() => { setInputValue(search) }, [search])
+
+  // 入力から 300ms 後にストアを更新（デバウンス）
+  useEffect(() => {
+    const id = setTimeout(() => setSearch(inputValue), 300)
+    return () => clearTimeout(id)
+  }, [inputValue, setSearch])
 
   const isDirty = search !== '' || status !== '' || operationStatus !== ''
 
@@ -21,8 +32,8 @@ export function OrderFilters() {
     <div className="flex flex-wrap items-center gap-2">
       <Input
         placeholder="受注項目名で検索..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
         className="h-8 w-52 text-sm"
       />
 

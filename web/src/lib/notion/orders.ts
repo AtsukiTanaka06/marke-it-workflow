@@ -4,7 +4,7 @@ import type {
 } from '@notionhq/client/build/src/api-endpoints'
 import { getNotionClient } from './client'
 import { withRateLimit } from './rate-limit'
-import { applyDefaultTemplate } from './template-blocks'
+
 import type {
   Order,
   OrderStatus,
@@ -18,19 +18,20 @@ import type {
 
 // ─── プロパティID定数 ─────────────────────────────────────────────────────────
 const PROP = {
-  NAME:             'title',   // 受注項目
-  PROJECT:          'bXmW',    // 案件名 (relation → 案件一覧DB)
-  INDUSTRY:         'rVn|',    // 業界
-  STATUS:           'qqK\\',   // 進捗 (status型)
-  OPERATION_STATUS: 'teo=',    // 運用進捗
-  AMOUNT:           'xwvG',    // 受注金額
-  CONTENT:          'mc_p',    // 受注内容
-  ASSIGNEE:         'o{;e',    // 担当者 (people)
-  NOTES:            '_u>H',    // 備考
-  ATTACHMENTS:      ']}TT',    // 添付 (read-only)
-  DEADLINE:         'SNM>',    // 期限
-  RATING:           'hGS~',    // 5段階評価
-  ACHIEVEMENT:      '}oCM',    // 実績記述欄
+  NAME:             'title',           // 受注項目
+  PROJECT:          'bXmW',            // 案件名 (relation → 案件一覧DB)
+  INDUSTRY:         'rVn|',            // 業界
+  STATUS:           'qqK\\',           // 進捗 (status型)
+  OPERATION_STATUS: 'teo=',            // 運用進捗
+  AMOUNT:           'xwvG',            // 受注金額
+  CONTENT:          'mc_p',            // 受注内容
+  ASSIGNEE:         'o{;e',            // 担当者 (people)
+  NOTES:            '_u>H',            // 備考
+  ATTACHMENTS:      ']}TT',            // 添付 (read-only)
+  DEADLINE:         'SNM>',            // 期限
+  RATING:           'hGS~',            // 5段階評価
+  ACHIEVEMENT:      '}oCM',            // 実績記述欄
+  GOOGLE_DRIVE_URL: 'GoogleドライブURL', // Google Drive URL (url型) — プロパティ名で指定
 } as const
 
 export const ORDERS_DB_ID = '1a49707a-4e5d-80b0-89b5-e9960da11e2f'
@@ -225,13 +226,6 @@ export async function createOrder(data: CreateOrderInput): Promise<Order> {
 
   const order = toOrder(page as PageObjectResponse)
 
-  // デフォルトテンプレートのブロックを追記（失敗しても作成自体は成功とする）
-  try {
-    await applyDefaultTemplate(order.id, ORDERS_DATA_SOURCE_ID)
-  } catch (err) {
-    console.error('[template] 受注テンプレート適用エラー:', err)
-  }
-
   return order
 }
 
@@ -294,6 +288,9 @@ function buildOrderProperties(data: UpdateOrderInput): Record<string, any> {
   }
   if (data.achievement !== undefined) {
     props[PROP.ACHIEVEMENT] = { rich_text: toRichTextParam(data.achievement) }
+  }
+  if (data.googleDriveUrl !== undefined) {
+    props[PROP.GOOGLE_DRIVE_URL] = { url: data.googleDriveUrl ?? null }
   }
 
   return props

@@ -20,10 +20,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const displayName = profile?.display_name ?? user.email ?? 'ユーザー'
 
   return (
-    <div className="flex flex-col h-screen">
-      <Header displayName={displayName} avatarUrl={profile?.avatar_url ?? null} />
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
+    <div className="flex h-screen">
+      <Sidebar />
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <Header displayName={displayName} avatarUrl={profile?.avatar_url ?? null} />
         <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
     </div>
