@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { Copy, Check, UserPlus } from 'lucide-react'
+import { Copy, Check, UserPlus, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -36,6 +36,8 @@ export function UserManagementSection({ currentUserId }: { currentUserId: string
   const [createdInfo, setCreatedInfo] = useState<{ email: string; password: string } | null>(null)
   const [copied, setCopied] = useState(false)
   const [updatingId, setUpdatingId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<CreateForm>({
     resolver: zodResolver(createSchema),
@@ -84,6 +86,21 @@ export function UserManagementSection({ currentUserId }: { currentUserId: string
     setTimeout(() => setCopied(false), 2000)
   }
 
+  async function deleteUser(id: string) {
+    setDeletingId(id)
+    const res = await fetch(`/api/settings/users/${id}`, { method: 'DELETE' })
+    if (!res.ok) {
+      const text = await res.text()
+      toast.error(text || 'ユーザーの削除に失敗しました')
+      setDeletingId(null)
+      return
+    }
+    setUsers((prev) => prev.filter((u) => u.id !== id))
+    toast.success('ユーザーを削除しました')
+    setDeletingId(null)
+    setConfirmDeleteId(null)
+  }
+
   async function changeRole(id: string, role: 'admin' | 'member') {
     setUpdatingId(id)
     const res = await fetch(`/api/settings/users/${id}`, {
@@ -102,7 +119,7 @@ export function UserManagementSection({ currentUserId }: { currentUserId: string
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-base font-semibold">ユーザー管理</h2>
-          <p className="text-sm text-muted-foreground mt-0.5">メンバーの追加とロール変更ができます</p>
+          <p className="text-sm text-muted-foreground mt-0.5">メンバーの追加・ロール変更・削除ができます</p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
           <DialogTrigger render={<Button size="sm" className="h-8 gap-1" />}>
@@ -189,19 +206,56 @@ export function UserManagementSection({ currentUserId }: { currentUserId: string
                 {user.role === 'admin' ? '管理者' : 'メンバー'}
               </Badge>
               {user.id !== currentUserId && (
-                <Select
-                  key={`role-${user.id}-${user.role}`}
-                  defaultValue={user.role}
-                  onValueChange={(v) => changeRole(user.id, v as 'admin' | 'member')}
-                >
-                  <SelectTrigger className="h-7 w-28 text-xs" size="sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="admin">管理者に変更</SelectItem>
-                    <SelectItem value="member">メンバーに変更</SelectItem>
-                  </SelectContent>
-                </Select>
+                <>
+                  <Select
+                    key={`role-${user.id}-${user.role}`}
+                    defaultValue={user.role}
+                    onValueChange={(v) => changeRole(user.id, v as 'admin' | 'member')}
+                    disabled={!!updatingId}
+                  >
+                    <SelectTrigger className="h-7 w-28 text-xs" size="sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">管理者に変更</SelectItem>
+                      <SelectItem value="member">メンバーに変更</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {confirmDeleteId === user.id ? (
+                    <div className="flex items-center gap-1 shrink-0">
+                      <span className="text-xs text-destructive">削除しますか?</span>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="h-7 px-2 text-xs"
+                        disabled={deletingId === user.id}
+                        onClick={() => deleteUser(user.id)}
+                      >
+                        {deletingId === user.id ? '削除中...' : 'はい'}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 px-2 text-xs"
+                        onClick={() => setConfirmDeleteId(null)}
+                      >
+                        いいえ
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 px-0 text-muted-foreground hover:text-destructive shrink-0"
+                      onClick={() => setConfirmDeleteId(user.id)}
+                    >
+                      <Trash2 className="size-3.5" />
+                    </Button>
+                  )}
+                </>
               )}
               {user.id === currentUserId && (
                 <span className="text-xs text-muted-foreground w-28 text-center">（自分）</span>
