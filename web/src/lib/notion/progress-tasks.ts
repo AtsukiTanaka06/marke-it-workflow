@@ -114,13 +114,20 @@ export async function updateProgressTaskDocumentLink(
   url:    string
 ): Promise<void> {
   const notion = await getNotionClient()
-  await withRateLimit(() =>
-    notion.pages.update({
-      page_id: pageId,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      properties: {
-        [PROP.DOCUMENT_LINK]: { url },
-      } as Parameters<typeof notion.pages.update>[0]['properties'],
-    })
-  )
+  console.log('[progress-tasks] updateDocumentLink pageId:', pageId, 'url:', url, 'prop:', PROP.DOCUMENT_LINK)
+  try {
+    await withRateLimit(() =>
+      notion.pages.update({
+        page_id: pageId,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        properties: {
+          [PROP.DOCUMENT_LINK]: { url },
+        } as Parameters<typeof notion.pages.update>[0]['properties'],
+      })
+    )
+    console.log('[progress-tasks] updateDocumentLink success:', pageId)
+  } catch (err) {
+    console.error('[progress-tasks] updateDocumentLink FAILED:', pageId, err)
+    throw err
+  }
 }

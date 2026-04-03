@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       const tasksWithDoc = createdTasks.filter((t) => t.documentName)
       if (tasksWithDoc.length > 0) {
         const files = await listFilesInFolder(newFolderId)
-        await Promise.allSettled(
+        const results = await Promise.allSettled(
           tasksWithDoc.map((task) => {
             const matched = files.find((f) =>
               f.name.includes(task.documentName!)
@@ -83,6 +83,11 @@ export async function POST(request: NextRequest) {
             return updateProgressTaskDocumentLink(task.pageId, matched.webViewLink)
           })
         )
+        results.forEach((r, i) => {
+          if (r.status === 'rejected') {
+            console.error('[drive] linking failed index', i, tasksWithDoc[i]?.documentName, r.reason)
+          }
+        })
       }
     } catch (err) {
       console.error('[drive] フォルダコピー または Notion 更新エラー:', err)
