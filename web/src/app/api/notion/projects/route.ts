@@ -19,8 +19,14 @@ export async function GET(request: NextRequest) {
     pageSize: Number(searchParams.get('pageSize') ?? '20'),
   }
 
-  const result = await listProjects(options)
-  return Response.json(result)
+  try {
+    const result = await listProjects(options)
+    return Response.json(result)
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error('[GET /api/notion/projects]', message)
+    return Response.json({ error: message }, { status: 500 })
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -29,6 +35,12 @@ export async function POST(request: NextRequest) {
   if (!user) return new Response('Unauthorized', { status: 401 })
 
   const body = await request.json() as CreateProjectInput
-  const project = await createProject(body)
-  return Response.json(project, { status: 201 })
+  try {
+    const project = await createProject(body)
+    return Response.json(project, { status: 201 })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error('[POST /api/notion/projects]', message)
+    return Response.json({ error: message }, { status: 500 })
+  }
 }
