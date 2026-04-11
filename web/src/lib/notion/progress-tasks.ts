@@ -11,6 +11,7 @@ const PROP = {
   PHASE:         'フェーズ',           // select — プロパティ名で指定
   SEQ:           '順序',              // number — プロパティ名で指定
   DOCUMENT_LINK: 'ドキュメントリンク',  // url — プロパティ名で指定
+  DETAIL:        '詳細',              // rich_text — プロパティ名で指定
   ASSIGNEE:      '担当者',            // people — プロパティ名で指定
   PARENT_ITEM:   '親アイテム',         // relation (sub-item)
 } as const
@@ -98,11 +99,13 @@ function buildProps(
     [PROP.NAME]:  { title: [{ type: 'text', text: { content: tpl.name } }] },
     [PROP.ORDER]: { relation: [{ id: orderId }] },
   }
-  if (tpl.phase)        props[PROP.PHASE]       = { select: { name: tpl.phase } }
-  if (tpl.order != null) props[PROP.SEQ]         = { number: tpl.order }
+  if (tpl.phase)        props[PROP.PHASE]          = { select: { name: tpl.phase } }
+  if (tpl.order != null) props[PROP.SEQ]            = { number: tpl.order }
+  if (tpl.documentLink) props[PROP.DOCUMENT_LINK]  = { url: tpl.documentLink }
+  if (tpl.detail)       props[PROP.DETAIL]          = { rich_text: [{ type: 'text', text: { content: tpl.detail } }] }
   if (assigneeIds.length > 0)
-                        props[PROP.ASSIGNEE]    = { people: assigneeIds.map((id) => ({ id })) }
-  if (parentPageId)     props[PROP.PARENT_ITEM] = { relation: [{ id: parentPageId }] }
+                        props[PROP.ASSIGNEE]       = { people: assigneeIds.map((id) => ({ id })) }
+  if (parentPageId)     props[PROP.PARENT_ITEM]    = { relation: [{ id: parentPageId }] }
 
   return props
 }

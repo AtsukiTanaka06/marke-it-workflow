@@ -14,10 +14,12 @@ const FILTER_PROP = {
 
 // ─── 値読み取り用プロパティ名（名前ベースアクセス） ───────────────────────────
 const READ_PROP = {
-  PHASE:         'フェーズ',       // select
-  ORDER:         '順序',           // number
-  DOCUMENT_NAME: 'ドキュメント名',  // rich_text
-  PARENT_ITEM:   '親アイテム',      // relation (sub-item の親ページID)
+  PHASE:          'フェーズ',          // select
+  ORDER:          '順序',              // number
+  DOCUMENT_NAME:  'ドキュメント名',    // rich_text
+  DOCUMENT_LINK:  'ドキュメントリンク', // url
+  DETAIL:         '詳細',              // rich_text
+  PARENT_ITEM:    '親アイテム',         // relation (sub-item の親ページID)
 } as const
 
 export type TaskTemplate = {
@@ -26,6 +28,8 @@ export type TaskTemplate = {
   phase:            string | null
   order:            number | null
   documentName:     string | null
+  documentLink:     string | null // テンプレートに設定済みのドキュメントリンク
+  detail:           string | null // 詳細 (rich_text)
   parentTemplateId: string | null // null = 親タスク、string = 子タスクの親テンプレートID
 }
 
@@ -71,6 +75,8 @@ export async function listActiveTemplates(): Promise<TaskTemplate[]> {
       const phaseProp      = props[READ_PROP.PHASE]
       const orderProp      = props[READ_PROP.ORDER]
       const docNameProp    = props[READ_PROP.DOCUMENT_NAME]
+      const docLinkProp    = props[READ_PROP.DOCUMENT_LINK]
+      const detailProp     = props[READ_PROP.DETAIL]
       const parentItemProp = props[READ_PROP.PARENT_ITEM]
 
       return {
@@ -86,6 +92,12 @@ export async function listActiveTemplates(): Promise<TaskTemplate[]> {
           : null,
         documentName: docNameProp?.type === 'rich_text'
           ? docNameProp.rich_text.map((t) => t.plain_text).join('').trim() || null
+          : null,
+        documentLink: docLinkProp?.type === 'url'
+          ? docLinkProp.url ?? null
+          : null,
+        detail: detailProp?.type === 'rich_text'
+          ? detailProp.rich_text.map((t) => t.plain_text).join('').trim() || null
           : null,
         parentTemplateId: parentItemProp?.type === 'relation' && parentItemProp.relation.length > 0
           ? parentItemProp.relation[0].id
