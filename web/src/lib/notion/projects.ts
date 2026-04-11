@@ -17,18 +17,18 @@ import type {
 
 // ─── プロパティID定数（名前変更に強い） ──────────────────────────────────────────
 const PROP = {
-  NAME:             'title',   // 案件名
-  STATUS:           'bW^a',    // 進捗状況 (末尾スペースあり)
-  TYPE:             '[anH',    // 種別
-  INDUSTRY:         'R@o~',    // 業界
-  DEADLINE:         'stZx',    // プロジェクト期限
-  INITIAL_COST:     'Lmsd',    // 初期費用
-  MONTHLY_COST:     '`GBV',    // 月額費用
-  TOTAL_COST:       '^{C]',    // 受注費総計 (formula, read-only)
-  CONTRACT_CONTENT: 'LmZa',    // 契約内容
-  NOTES:            'V\\:J',   // 特記
-  PROGRESS:         ']SH\\',   // 案件進捗 (formula, read-only)
-  ASSIGNEE:         '担当者',   // 担当者 (people) — プロパティ名で指定
+  NAME:             'title',      // 案件名
+  STATUS:           'bW%5Ea',     // 進捗状況 (末尾スペースあり)
+  TYPE:             '%5BanH',     // 種別
+  INDUSTRY:         'R%40o~',     // 業界
+  DEADLINE:         'stZx',       // プロジェクト期限
+  INITIAL_COST:     'Lmsd',       // 初期費用
+  MONTHLY_COST:     '%60GBV',     // 月額費用
+  TOTAL_COST:       '%5E%7BC%5D', // 受注費総計 (formula, read-only)
+  CONTRACT_CONTENT: 'LmZa',       // 契約内容
+  NOTES:            'V%5C%3AJ',   // 特記
+  PROGRESS:         '%5DSH%5C',   // 案件進捗 (formula, read-only)
+  ASSIGNEE:         '担当者',      // 担当者 (people) — プロパティ名で指定
 } as const
 
 export const PROJECTS_DB_ID = '19d9707a-4e5d-800d-a40f-dec078f895df'

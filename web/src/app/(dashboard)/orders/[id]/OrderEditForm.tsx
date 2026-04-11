@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import type { Order, OrderStatus, OperationStatus, Project } from '@/types/notion'
+import { IndustryPicker } from '@/components/orders/IndustryPicker'
 
 const schema = z.object({
   name:            z.string().min(1, '受注項目名は必須です'),
@@ -24,7 +25,6 @@ const schema = z.object({
   deadline:        z.string().optional(),
   content:         z.string().optional(),
   notes:           z.string().optional(),
-  achievement:     z.string().optional(),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -49,6 +49,7 @@ export function OrderEditForm({ order }: { order: Order }) {
   const [projects, setProjects] = useState<Project[]>([])
   const [projectSearch, setProjectSearch] = useState('')
   const [selectedProjectId, setSelectedProjectId] = useState(order.projectId ?? '')
+  const [selectedIndustries, setSelectedIndustries] = useState<string[]>(order.industry)
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -61,7 +62,6 @@ export function OrderEditForm({ order }: { order: Order }) {
       deadline:        order.deadline ?? '',
       content:         richToPlain(order.content),
       notes:           richToPlain(order.notes),
-      achievement:     richToPlain(order.achievement),
     },
   })
 
@@ -91,9 +91,9 @@ export function OrderEditForm({ order }: { order: Order }) {
         operationStatus: (values.operationStatus as OperationStatus) || undefined,
         amount:          values.amount ? Number(values.amount) : null,
         deadline:        values.deadline || null,
+        industry:        selectedIndustries,
         content:         values.content     ? toRichText(values.content)     : [],
         notes:           values.notes       ? toRichText(values.notes)       : [],
-        achievement:     values.achievement ? toRichText(values.achievement) : [],
       }
 
       const res = await fetch(`/api/notion/orders/${order.id}`, {
@@ -164,6 +164,8 @@ export function OrderEditForm({ order }: { order: Order }) {
         {errors.projectId && <p className="text-xs text-destructive">{errors.projectId.message}</p>}
       </div>
 
+      <IndustryPicker value={selectedIndustries} onChange={setSelectedIndustries} />
+
       <Separator />
 
       {/* ステータス・運用進捗・金額・期限 */}
@@ -212,11 +214,6 @@ export function OrderEditForm({ order }: { order: Order }) {
       <div className="space-y-1">
         <Label htmlFor="content">受注内容</Label>
         <Textarea id="content" rows={4} {...register('content')} />
-      </div>
-
-      <div className="space-y-1">
-        <Label htmlFor="achievement">実績記述</Label>
-        <Textarea id="achievement" rows={4} {...register('achievement')} />
       </div>
 
       <div className="space-y-1">

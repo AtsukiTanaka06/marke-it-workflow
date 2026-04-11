@@ -13,7 +13,14 @@ export async function GET(
 
   const { id } = await params
   const order = await getOrder(id)
-  return Response.json(order)
+
+  // DEBUG: 実際のプロパティIDを確認するための一時コード
+  const { getNotionClient } = await import('@/lib/notion/client')
+  const notion = await getNotionClient()
+  const page = await notion.pages.retrieve({ page_id: id }) as import('@notionhq/client/build/src/api-endpoints').PageObjectResponse
+  const propIds = Object.entries(page.properties).map(([name, p]) => ({ name, id: p.id, type: p.type }))
+
+  return Response.json({ order, _debug_propIds: propIds })
 }
 
 export async function PATCH(

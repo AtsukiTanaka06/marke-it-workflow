@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -20,8 +20,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
+import { Progress } from '@/components/ui/progress'
 import type { Order, OrderStatus, OperationStatus, Project } from '@/types/notion'
 import { NotionUserPicker } from '@/components/notion/NotionUserPicker'
+import { IndustryPicker } from '@/components/orders/IndustryPicker'
 
 type DriveFolder = { id: string; name: string }
 
@@ -59,12 +61,16 @@ export function OrderCreateModal({ onCreated }: Props) {
   const [selectedProjectId, setSelectedProjectId] = useState('')
   const [createWorkflow, setCreateWorkflow] = useState(true)
   const [assigneeIds, setAssigneeIds] = useState<string[]>([])
+  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [driveFolders, setDriveFolders] = useState<DriveFolder[]>([])
   const [driveFoldersLoading, setDriveFoldersLoading] = useState(false)
   const [driveFoldersError, setDriveFoldersError] = useState<string | null>(null)
   const [selectedDriveFolderId, setSelectedDriveFolderId] = useState('')
   const [docCustomerName, setDocCustomerName] = useState('')
   const [docLStepFee, setDocLStepFee] = useState('')
+  const [progress, setProgress] = useState(0)
+  const [progressLabel, setProgressLabel] = useState('')
+  const progressTimer = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -107,6 +113,7 @@ export function OrderCreateModal({ onCreated }: Props) {
       : baseFiltered
 
   function handleClose() {
+    if (progressTimer.current) clearInterval(progressTimer.current)
     setOpen(false)
     reset()
     setProjectSearch('')
@@ -116,47 +123,92 @@ export function OrderCreateModal({ onCreated }: Props) {
     setDriveFolders([])
     setDriveFoldersError(null)
     setAssigneeIds([])
+    setSelectedIndustries([])
     setDocCustomerName('')
     setDocLStepFee('')
+    setProgress(0)
+    setProgressLabel('')
   }
 
   async function onSubmit(values: FormValues) {
     const selectedFolder = driveFolders.find((f) => f.id === selectedDriveFolderId)
+    const hasDrive = !!selectedFolder
+    const hasWorkflow = createWorkflow
 
-    const body = {
-      name:            values.name,
-      projectId:       values.projectId,
-      status:          (values.status as OrderStatus) || undefined,
-      operationStatus: (values.operationStatus as OperationStatus) || undefined,
-      amount:          values.amount ? Number(values.amount) : null,
-      deadline:        values.deadline || null,
-      content:         values.content ? toRichText(values.content) : undefined,
-      notes:           values.notes   ? toRichText(values.notes)   : undefined,
-      assigneeIds:     assigneeIds.length > 0 ? assigneeIds : undefined,
-      createWorkflow,
-      // Drive フォルダ選択時はサーバー側でコピー → GoogleドライブURL に書き込み
-      ...(selectedFolder ? {
-        driveFolderId:   selectedFolder.id,
-        driveFolderName: selectedFolder.name,
-        docReplacements: {
-          ...(docCustomerName ? { '{{顧客名}}': docCustomerName } : {}),
-          ...(docLStepFee     ? { '{{LStep構築費用}}': docLStepFee } : {}),
-        },
-      } : {}),
+    // プログレスバー開始
+    const steps = [
+      { target: 35, label: '受注をNotionに登録中...' },
+      ...(hasWorkflow ? [{ target: 65, label: 'ワークフローを準備中...' }] : []),
+      ...(hasDrive    ? [{ target: 90, label: 'Google Driveにコピー中...' }] : []),
+    ]
+    let stepIndex = 0
+    let current = 0
+    setProgress(0)
+    setProgressLabel(steps[0].label)
+
+    progressTimer.current = setInterval(() => {
+      const ceiling = steps[stepIndex]?.target ?? 90
+      if (current < ceiling) {
+        current = Math.min(current + 2, ceiling)
+        setProgress(current)
+      } else if (stepIndex < steps.length - 1) {
+        stepIndex++
+        setProgressLabel(steps[stepIndex].label)
+      }
+    }, 80)
+
+    try {
+      const body = {
+        name:            values.name,
+        projectId:       values.projectId,
+        status:          (values.status as OrderStatus) || undefined,
+        operationStatus: (values.operationStatus as OperationStatus) || undefined,
+        amount:          values.amount ? Number(values.amount) : null,
+        deadline:        values.deadline || null,
+        content:         values.content ? toRichText(values.content) : undefined,
+        notes:           values.notes   ? toRichText(values.notes)   : undefined,
+        industry:        selectedIndustries.length > 0 ? selectedIndustries : undefined,
+        assigneeIds:     assigneeIds.length > 0 ? assigneeIds : undefined,
+        createWorkflow,
+        // Drive フォルダ選択時はサーバー側でコピー → GoogleドライブURL に書き込み
+        ...(selectedFolder ? {
+          driveFolderId:   selectedFolder.id,
+          driveFolderName: selectedFolder.name,
+          docReplacements: {
+            ...(docCustomerName ? { '{{顧客名}}': docCustomerName } : {}),
+            ...(docLStepFee     ? { '{{LStep構築費用}}': docLStepFee } : {}),
+          },
+        } : {}),
+      }
+
+      const res = await fetch('/api/notion/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+
+      if (progressTimer.current) clearInterval(progressTimer.current)
+
+      if (!res.ok) {
+        setProgress(0)
+        setProgressLabel('')
+        toast.error('作成に失敗しました')
+        return
+      }
+
+      setProgress(100)
+      setProgressLabel('完了！')
+
+      const order: Order = await res.json()
+      toast.success('受注を作成しました')
+      onCreated(order)
+      setTimeout(handleClose, 400)
+    } catch {
+      if (progressTimer.current) clearInterval(progressTimer.current)
+      setProgress(0)
+      setProgressLabel('')
+      toast.error('作成に失敗しました')
     }
-
-    const res = await fetch('/api/notion/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-
-    if (!res.ok) { toast.error('作成に失敗しました'); return }
-
-    const order: Order = await res.json()
-    toast.success('受注を作成しました')
-    onCreated(order)
-    handleClose()
   }
 
   return (
@@ -165,11 +217,23 @@ export function OrderCreateModal({ onCreated }: Props) {
         <Plus className="size-4" />
         新規作成
       </DialogTrigger>
-      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+      <DialogContent className="w-[90vw] sm:max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
         <DialogHeader className="shrink-0">
           <DialogTitle>受注を新規作成</DialogTitle>
+          {progress > 0 && (
+            <div className="space-y-1.5 pt-2">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{progressLabel}</span>
+                <span>{progress}%</span>
+              </div>
+              <Progress value={progress} className="h-1.5" />
+            </div>
+          )}
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0 relative">
+          {isSubmitting && (
+            <div className="absolute inset-0 z-10 bg-background/60 rounded-md" />
+          )}
         <div className="space-y-4 pt-2 overflow-y-auto flex-1 pr-1">
 
           {/* 受注項目名 */}
@@ -268,6 +332,8 @@ export function OrderCreateModal({ onCreated }: Props) {
             <Label htmlFor="notes">備考</Label>
             <Textarea id="notes" rows={2} {...register('notes')} />
           </div>
+
+          <IndustryPicker value={selectedIndustries} onChange={setSelectedIndustries} />
 
           <NotionUserPicker value={assigneeIds} onChange={setAssigneeIds} />
 

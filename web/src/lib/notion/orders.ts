@@ -20,17 +20,17 @@ import type {
 const PROP = {
   NAME:             'title',           // 受注項目
   PROJECT:          'bXmW',            // 案件名 (relation → 案件一覧DB)
-  INDUSTRY:         'rVn|',            // 業界
-  STATUS:           'qqK\\',           // 進捗 (status型)
-  OPERATION_STATUS: 'teo=',            // 運用進捗
+  INDUSTRY:         'rVn%7C',          // 業界
+  STATUS:           'qqK%5C',          // 進捗 (status型)
+  OPERATION_STATUS: 'teo%3D',          // 運用進捗
   AMOUNT:           'xwvG',            // 受注金額
   CONTENT:          'mc_p',            // 受注内容
-  ASSIGNEE:         'o{;e',            // 担当者 (people)
-  NOTES:            '_u>H',            // 備考
-  ATTACHMENTS:      ']}TT',            // 添付 (read-only)
-  DEADLINE:         'SNM>',            // 期限
+  ASSIGNEE:         'o%7B%3Be',        // 担当者 (people)
+  NOTES:            '_u%3EH',          // 備考
+  ATTACHMENTS:      '%5D%7DTT',        // 添付 (read-only)
+  DEADLINE:         'SNM%3E',          // 期限
   RATING:           'hGS~',            // 5段階評価
-  ACHIEVEMENT:      '}oCM',            // 実績記述欄
+  ACHIEVEMENT:      '%7DoCM',          // 実績記述欄
   GOOGLE_DRIVE_URL: 'GoogleドライブURL', // Google Drive URL (url型) — プロパティ名で指定
 } as const
 
